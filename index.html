@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historias de la Mariposa 🦋</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Comic Sans MS', cursive, sans-serif;
+        /* Fondo más profundo y emotivo (atardecer/bosque mágico) */
+        background: linear-gradient(rgba(44, 24, 56, 0.5), rgba(240, 230, 255, 0.85)), url('https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1200&auto=format&fit=crop');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        overflow-x: hidden;
+    }
+
+    h1 {
+        text-align: center;
+        color: #4a154b;
+        margin-top: 20px;
+        font-size: 42px;
+        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+    }
+
+    .subtitulo {
+        text-align: center;
+        color: #5c3c70;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 25px;
+    }
+
+    .contenedor {
+        display: flex;
+        gap: 25px;
+        padding: 20px;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    /* Marcos más estilizados y suaves */
+    .palabras, .cuento {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 25px;
+        padding: 25px;
+        box-shadow: 0px 8px 25px rgba(122, 62, 157, 0.2);
+        border: 2px solid rgba(212, 159, 255, 0.4);
+    }
+
+    .palabras {
+        width: 35%;
+        min-height: 550px;
+    }
+
+    .cuento {
+        width: 65%;
+        min-height: 550px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* Zona de arrastre con diseño mágico */
+    .zona-cuento {
+        flex-grow: 1;
+        min-height: 300px;
+        border: 3px dashed #b175ff;
+        border-radius: 20px;
+        padding: 20px;
+        background: #fffbfe;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+    .zona-cuento.dragover {
+        background: #f3e8ff;
+        border-color: #8f6df2;
+    }
+
+    /* Palabras tipo burbuja flotante */
+    .palabra {
+        display: inline-block;
+        padding: 10px 18px;
+        margin: 5px;
+        background: linear-gradient(135deg, #ffd6f6 0%, #ffc4f2 100%);
+        border: 1px solid #fca5e5;
+        color: #5a206d;
+        border-radius: 30px;
+        cursor: grab;
+        font-size: 18px;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        user-select: none;
+    }
+
+    .palabra:hover {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: 0 6px 12px rgba(255, 112, 219, 0.3);
+        background: linear-gradient(135deg, #ffb8ec 0%, #ffa3e5 100%);
+    }
+
+    .palabra:active {
+        cursor: grabbing;
+    }
+
+    /* Diseño de inputs y botones de fantasía */
+    .agregar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 15px;
+        border: 2px solid #e2c6ff;
+        background: #fdfbff;
+        font-size: 16px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #8f6df2;
+    }
+
+    button {
+        padding: 12px 22px;
+        border: none;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #8f6df2 0%, #704ee0 100%);
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 16px;
+        font-family: inherit;
+        box-shadow: 0 4px 10px rgba(112, 78, 224, 0.3);
+        transition: all 0.2s;
+    }
+
+    button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(112, 78, 224, 0.4);
+    }
+
+    .btn-enviar {
+        background: linear-gradient(135deg, #ff6b8b 0%, #ff477e 100%);
+        box-shadow: 0 4px 10px rgba(255, 71, 126, 0.3);
+        margin-top: 15px;
+        align-self: flex-end;
+    }
+
+    .btn-enviar:hover {
+        box-shadow: 0 6px 14px rgba(255, 71, 126, 0.4);
+    }
+
+    /* Animación de Mariposas flotantes */
+    .mariposa {
+        position: fixed;
+        font-size: 32px;
+        animation: volar linear infinite;
+        opacity: 0.6;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes volar {
+        from { transform: translateY(100vh) translateX(0) rotate(0deg); }
+        to { transform: translateY(-120vh) translateX(120px) rotate(20deg); }
+    }
+
+    .instrucciones {
+        background: #fff8d1;
+        border-left: 5px solid #ffd000;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 15px;
+        color: #665500;
+    }
+
+    /* El resultado final del cuento */
+    .cuento-finalizado {
+        background: #fff;
+        border: 2px solid #ffb8ec;
+        border-radius: 20px;
+        padding: 20px;
+        margin-top: 15px;
+        font-size: 22px;
+        color: #4a154b;
+        line-height: 1.6;
+        text-align: center;
+        animation: aparecer 0.5s ease-out;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    @keyframes aparecer {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+</head>
+
+<body>
+
+<audio autoplay loop id="musicaFondo">
+    <source src="https://assets.mixkit.co/active_storage/sfx/123/123-84.wav" type="audio/wav">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<h1>🦋 Historias de la Mariposa 🦋</h1>
+<p class="subtitulo">Construyamos una emotiva historia de transformación colectiva ✨</p>
+
+<div class="mariposa" style="left:5%; animation-duration:14s;">🦋</div>
+<div class="mariposa" style="left:35%; animation-duration:19s;">✨</div>
+<div class="mariposa" style="left:55%; animation-duration:11s;">🦋</div>
+<div class="mariposa" style="left:80%; animation-duration:22s;">🌿</div>
+<div class="mariposa" style="left:20%; animation-duration:16s;">🌸</div>
+<div class="mariposa" style="left:90%; animation-duration:13s;">🦋</div>
+
+<div class="contenedor">
+
+    <div class="palabras">
+        <div class="instrucciones">
+            ✨ <strong>Pasos mágicos:</strong><br>
+            1. Escribe palabras sueltas o conectores (ej: "en el", "con un", "hacia la").<br>
+            2. Arrástralas al marco de la derecha en el orden que quieras.<br>
+            3. Haz clic en <strong>"Transformar en Cuento"</strong> para ver la magia.
+        </div>
+
+        <div class="agregar">
+            <input type="text" id="nuevaPalabra" placeholder="Escribe aquí (ej: mágica, volaba)..." onkeypress="evaluarEnter(event)">
+            <button onclick="agregarPalabra()">Agregar</button>
+        </div>
+
+        <h3>🌸 Palabras y Conectores</h3>
+        <div id="contenedorPalabras">
+            <div class="palabra" draggable="true">Una pequeña</div>
+            <div class="palabra" draggable="true">oruga</div>
+            <div class="palabra" draggable="true">soñaba con el</div>
+            <div class="palabra" draggable="true">cielo</div>
+            <div class="palabra" draggable="true">en medio del</div>
+            <div class="palabra" draggable="true">bosque</div>
+            <div class="palabra" draggable="true">y tras una gran</div>
+            <div class="palabra" draggable="true">transformación</div>
+            <div class="palabra" draggable="true">se convirtió en</div>
+            <div class="palabra" draggable="true">mariposa</div>
+            <div class="palabra" draggable="true">luego</div>
+            <div class="palabra" draggable="true">voló alto</div>
+            <div class="palabra" draggable="true">hacia el</div>
+            <div class="palabra" draggable="true">sol</div>
+        </div>
+    </div>
+
+    <div class="cuento">
+        <h2>📖 Nuestro lienzo de historia</h2>
+        
+        <div class="zona-cuento" id="zonaCuento">
+            <p id="textoGuia" style="color:#aaa; width: 100%; text-align: center; margin-top: 40px; font-style: italic;">
+                Arrastra aquí tus palabras en orden para tejer la historia...
+            </p>
+        </div>
+
+        <button class="btn-enviar" onclick="enviarYFormarCuento()">✨ Transformar en Cuento</button>
+        
+        <div id="resultadoCuento"></div>
+    </div>
+
+</div>
+
+<script>
+// Asegurar reproducción de música al interactuar con la pantalla si el navegador la bloquea
+document.body.addEventListener('click', () => {
+    const audio = document.getElementById('musicaFondo');
+    if(audio.paused) {
+        audio.volume = 0.4; // Volumen suave emotivo
+        audio.play();
+    }
+}, { once: true });
+
+function activarDrag(){
+    const palabrasActuales = document.querySelectorAll('.palabra');
+    palabrasActuales.forEach(palabra => {
+        palabra.addEventListener('dragstart', (e)=>{
+            e.dataTransfer.setData('text/plain', palabra.innerText);
+        });
+    });
+}
+
+// Inicializar el drag and drop
+activarDrag();
+
+const zonaCuento = document.getElementById('zonaCuento');
+const textoGuia = document.getElementById('textoGuia');
+
+zonaCuento.addEventListener('dragover', (e)=>{
+    e.preventDefault();
+    zonaCuento.classList.add('dragover');
+});
+
+zonaCuento.addEventListener('dragleave', ()=>{
+    zonaCuento.classList.remove('dragover');
+});
+
+zonaCuento.addEventListener('drop', (e)=>{
+    e.preventDefault();
+    zonaCuento.classList.remove('dragover');
+
+    // Quitar el texto de guía si es la primera palabra
+    if(textoGuia) {
+        textoGuia.style.display = 'none';
+    }
+
+    const texto = e.dataTransfer.getData('text/plain');
+
+    // Creamos la etiqueta tipo palabra dentro del lienzo
+    const nueva = document.createElement('span');
+    nueva.className = 'palabra';
+    nueva.innerText = texto;
+    
+    // Permitir quitar una palabra de la zona si se hace doble clic sobre ella
+    nueva.addEventListener('dblclick', () => {
+        nueva.remove();
+        if(zonaCuento.querySelectorAll('.palabra').length === 0) {
+            textoGuia.style.display = 'block';
+        }
+    });
+
+    zonaCuento.appendChild(nueva);
+});
+
+// Agregar nuevas palabras personalizadas
+function agregarPalabra(){
+    const input = document.getElementById('nuevaPalabra');
+
+    if(input.value.trim() !== ''){
+        const nuevaPalabra = document.createElement('div');
+        nuevaPalabra.className = 'palabra';
+        nuevaPalabra.draggable = true;
+        nuevaPalabra.innerText = input.value;
+
+        document.getElementById('contenedorPalabras').appendChild(nuevaPalabra);
+        input.value = '';
+        
+        activarDrag();
+    }
+}
+
+function evaluarEnter(e) {
+    if(e.key === 'Enter') {
+        agregarPalabra();
+    }
+}
+
+// Función mágica interactiva final: Une todo y hace nacer el cuento formal
+function enviarYFormarCuento(){
+    const palabrasEnZona = zonaCuento.querySelectorAll('.palabra');
+    const contenedorResultado = document.getElementById('resultadoCuento');
+    
+    if(palabrasEnZona.length === 0) {
+        alert("¡Primero arrastra algunas palabras al lienzo para crear tu historia! 🦋");
+        return;
+    }
+
+    // Unir los textos de los globos con espacios de forma fluida
+    let arregloPalabras = [];
+    palabrasEnZona.forEach(p => {
+        arregloPalabras.push(p.innerText);
+    });
+    
+    let cuentoCompleto = arregloPalabras.join(" ");
+    
+    // Asegurar que empiece con mayúscula y termine con un punto emotivo
+    cuentoCompleto = cuentoCompleto.charAt(0).toUpperCase() + cuentoCompleto.slice(1) + ".";
+
+    // Insertar la caja de diseño literario final
+    contenedorResultado.innerHTML = `
+        <div class="cuento-finalizado">
+            <p><strong>📖 Tu Cuento de la Mariposa:</strong></p>
+            <p style="font-style: italic; color: #5a206d;">"${cuentoCompleto}"</p>
+            <small style="font-size:12px; color:#999;">¡Felicidades! Has completado el ciclo de la transformación ✨</small>
+        </div>
+    `;
+    
+    // Pequeño scroll suave hacia abajo automático para leer el cuento
+    contenedorResultado.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
